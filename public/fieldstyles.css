@@ -1,0 +1,40 @@
+h1 {
+	color: white;
+	text-align: center;
+	font-weight: bold;
+	font-size: 5vh;
+}
+
+canvas {
+	margin: auto;
+	border-style: solid;
+	border-color: white;
+	display: block;
+}
+
+#ui {
+	text-align: center;
+}
+
+button{
+	background-color: #D3D3D3;
+	border-radius: 5px;
+	border: 3px solid #696969;
+	font-weight: bold;
+	transition-duration: 0.1s;
+	color: #696969;
+	padding: 10px 10px;
+}
+
+button:hover{
+	background-color: #696969;
+	color: white;
+	border: 3px solid white;
+}
+
+input{
+	padding: 10px 10px;
+	border: 3px solid #696969;
+	border-radius: 10px;
+	color: black;
+}
