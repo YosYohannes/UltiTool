@@ -172,6 +172,14 @@ io.on('connection', (socket) => {
     	team[data.userName] = 1 - team[data.userName];
     });
 
+    socket.on('reset', function(data){
+    	players = {};
+    	ball.x = 0.5*width;
+    	ball.y = 0.4*height;
+    	ball.x_speed = 0;
+    	ball.y_speed = 0; 
+    });
+
     socket.on('disconnect', () =>{
     	console.log('removed connection ', socket.id);
     	try {

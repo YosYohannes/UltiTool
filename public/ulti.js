@@ -5,6 +5,7 @@ var socket = io.connect('http://localhost:8000');
 
 var btn = document.getElementById('join');
 var teamBtn = document.getElementById('team');
+var resetBtn = document.getElementById('reset');
 
 var canvas = document.createElement("canvas");
 var width = 1500;
@@ -21,7 +22,7 @@ var mouseClick = 0;
 
 // Game loop
 var render = function () {
-    context.fillStyle = "green";
+    context.fillStyle = "#90C978";
     context.fillRect(0, 0, width, height);
     context.fillStyle = "white";
     context.fillRect(345, 0, 3, height);
@@ -35,10 +36,10 @@ function renderPlayers(players) {
         var p = players[id];
         context.beginPath();
         context.arc(p.x, p.y, p.size, 2 * Math.PI, false);
-        if(team[p.name] == 0) context.fillStyle = "#00CED1";
-        else context.fillStyle = "#F08080";
+        if(team[p.name] == 0) context.fillStyle = "#0083A3";
+        else context.fillStyle = "#E2504B";
         context.fill();
-        context.font = "bold 15px Courier";
+        context.font = "15px Verdana, Geneva, sans-serif";
         context.fillStyle = "white";
         context.textAlign = "center";
         context.fillText(p.name.substring(0,5),p.x,p.y - 2*p.size);
@@ -119,6 +120,12 @@ btn.addEventListener("click", function(){
 
 teamBtn.addEventListener("click", function(){
     socket.emit('changeTeam', {
+        userName: curPlayer
+    });
+});
+
+resetBtn.addEventListener("click", function(){
+    socket.emit('reset', {
         userName: curPlayer
     });
 });
