@@ -166,6 +166,7 @@ io.on('connection', (socket) => {
     	players[socket.id] = new Player(data.userName);
     	keysDown[data.userName] = {};
     	team[data.userName] = 1;
+    	mousePos[data.userName] = {x: 0, y:0};
     });
 
     socket.on('changeTeam', function(data){
@@ -177,13 +178,18 @@ io.on('connection', (socket) => {
     	ball.x = 0.5*width;
     	ball.y = 0.4*height;
     	ball.x_speed = 0;
-    	ball.y_speed = 0; 
+    	ball.y_speed = 0;
+    	keysDown = {};
+    	mousePos = {};
+    	mouseClick = {};
+    	team = {};
     });
 
     socket.on('disconnect', () =>{
     	console.log('removed connection ', socket.id);
     	try {
     		delete keysDown[players[socket.id].name];
+    		delete team[players[socket.id].name];
     		delete players[socket.id];
     	} catch(err){}
     });
@@ -192,6 +198,9 @@ io.on('connection', (socket) => {
 setInterval(gameloop, 16);
 function gameloop(){
 	update();
+	for(var id in players){
+		if(!Object.keys(io.sockets.sockets).includes(id)) delete players[id];
+	}
 	io.sockets.emit('players', players);
 	io.sockets.emit('ball', ball);
 	io.sockets.emit('team', team);

@@ -16,9 +16,6 @@ var context = canvas.getContext('2d');
 var players = {};
 var ball = null;
 var curPlayer = "none";
-var keysDown = {};
-var mousePos = {};
-var mouseClick = 0;
 
 // Game loop
 var render = function () {
