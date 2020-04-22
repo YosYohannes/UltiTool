@@ -40,6 +40,7 @@ function renderPlayers(players) {
         context.fillStyle = "white";
         context.textAlign = "center";
         context.fillText(p.name.substring(0,5),p.x,p.y - 2*p.size);
+        if(p.stall/1000 >= 1) context.fillText(Math.floor(p.stall/1000),p.x,p.y + 2.5*p.size);
     }
 };
 
@@ -47,7 +48,8 @@ function renderBall(ball){
     if(ball != null){
         context.beginPath();
         context.arc(ball.x, ball.y, 4.5, 2 * Math.PI, false);
-        context.fillStyle = "white";
+        if(ball.grounded) context.fillStyle = "grey";
+        else context.fillStyle = "white";
         context.fill();
     }
 };

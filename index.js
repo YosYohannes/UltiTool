@@ -32,6 +32,8 @@ function Player(name) {
     this.directionX = 0;
     this.directionY = -1;
     this.speed = 2.25;
+    this.target = {x:0, y:0};
+    this.stall = 0;
 }
 
 Player.prototype.move = function (x, y) {
@@ -43,13 +45,18 @@ Player.prototype.update = function () {
     var movX = 0;
     var movY = 0;
     if (this.possess == 1){
-        var tempX = mousePos[this.name].x - this.x;
-        var tempY = mousePos[this.name].y - this.y;
-        dirLength = Math.sqrt(tempX*tempX + tempY*tempY);
-        this.directionX = tempX/dirLength;
-        this.directionY = tempY/dirLength;
-        if(mouseClick[this.name] == 1)this.throwing = 1; 
+    	this.stall += 1000/60;
+        var tempX = mousePos[this.name].x;
+        var tempY = mousePos[this.name].y;
+        dirLength = Math.sqrt((tempX - this.x)*(tempX - this.x) + (tempY - this.y)*(tempY - this.y));
+        this.directionX = (tempX - this.x)/dirLength;
+        this.directionY = (tempY - this.y)/dirLength;
+        if(mouseClick[this.name] == 1){
+        	this.target = {x: tempX, y: tempY};
+        	this.throwing = 1;
+        }
     } else {
+    	this.stall = 0;
         this.size = 10;
         var tempKeys = keysDown[this.name];
         for (var key in tempKeys) {
@@ -78,11 +85,17 @@ function Ball() {
     this.y = 0.4*height;
     this.x_speed = 0;
     this.y_speed = 0;
+    this.target = {x:0.5*width, y:0.4*height};
+    this.grounded = false;
 }
 
 Ball.prototype.update = function () {
-    this.x += this.x_speed;
-    this.y += this.y_speed;
+	var evalX = this.x_speed + ((this.target.x - this.x)/70);
+	var evalY = this.y_speed + ((this.target.y - this.y)/70);
+	this.x += evalX;
+    this.y += evalY;
+    if(Math.abs(evalX) + Math.abs(evalY) < 0.5) this.grounded = true;
+    else this.grounded = false;
     var top_x = this.x - 4.5;
     var top_y = this.y - 4.5;
     var bottom_x = this.x + 4.5;
@@ -113,10 +126,12 @@ Ball.prototype.update = function () {
         var yDisp = p.directionY;
         if (p.throwing == 1){
             if (top_y < (p.y + 3*p.size) && bottom_y > (p.y - 3*p.size) && top_x < (p.x + 3*p.size) && bottom_x > (p.x - 3*p.size)){
-                this.x_speed = xDisp * 4.5;
-                this.y_speed = yDisp * 4.5;  
+                this.target = p.target;
+                this.x_speed = xDisp * 2;
+                this.y_speed = yDisp * 2;  
             } else {
                 p.throwing = 0;
+                p.possess = 0;
             }
         } else if (top_y < (p.y + p.size) && bottom_y > (p.y - p.size) && top_x < (p.x + p.size) && bottom_x > (p.x - p.size)) {
             this.x_speed = 0;
@@ -124,6 +139,7 @@ Ball.prototype.update = function () {
             p.possess = 1;
             this.x = p.x + p.size * xDisp;
             this.y = p.y + p.size * yDisp;
+            this.grounded = false;
         } else {
             p.possess = 0;
         }
@@ -177,6 +193,7 @@ io.on('connection', (socket) => {
     	players = {};
     	ball.x = 0.5*width;
     	ball.y = 0.4*height;
+    	ball.target = {x:0.5*width, y:0.4*height};
     	ball.x_speed = 0;
     	ball.y_speed = 0;
     	keysDown = {};
