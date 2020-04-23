@@ -2,6 +2,7 @@ var express = require('express');
 var socket = require('socket.io');
 
 const PORT = process.env.NODE_ENV == 'dev' ? 8000 : 8080;
+//const PORT = 8000;
 
 // App setup
 var app = express();
@@ -46,6 +47,13 @@ Player.prototype.move = function (x, y) {
 Player.prototype.update = function () {
     var movX = 0;
     var movY = 0;
+    var tempKeys = keysDown[this.name];
+    for (var key in tempKeys) {
+    	var value = Number(key);
+        if (value == 32) {
+            this.possess = 0;
+        }
+    }
     if (this.possess == 1){
     	this.stall += 1000/60;
         var tempX = mousePos[this.name].x;
@@ -60,7 +68,6 @@ Player.prototype.update = function () {
     } else {
     	this.stall = 0;
         this.size = 10;
-        var tempKeys = keysDown[this.name];
         for (var key in tempKeys) {
             var value = Number(key);
             if (value == 65) {
@@ -89,6 +96,7 @@ function Ball() {
     this.y_speed = 0;
     this.target = {x:0.5*width, y:0.4*height};
     this.grounded = false;
+    this.carrier = null;
 }
 
 Ball.prototype.update = function () {
@@ -96,7 +104,7 @@ Ball.prototype.update = function () {
 	var evalY = this.y_speed + ((this.target.y - this.y)/70);
 	this.x += evalX;
     this.y += evalY;
-    if(Math.abs(evalX) + Math.abs(evalY) < 0.5) this.grounded = true;
+    if(Math.abs(evalX) + Math.abs(evalY) < 1.8) this.grounded = true;
     else this.grounded = false;
     var top_x = this.x - 4.5;
     var top_y = this.y - 4.5;
@@ -121,29 +129,40 @@ Ball.prototype.update = function () {
         this.x_speed = 0;
         this.y_speed = 0;
     }
-
     for (var id in players){
         var p = players[id];
-        var xDisp = p.directionX;
-        var yDisp = p.directionY;
-        if (p.throwing == 1){
-            if (top_y < (p.y + 3*p.size) && bottom_y > (p.y - 3*p.size) && top_x < (p.x + 3*p.size) && bottom_x > (p.x - 3*p.size)){
-                this.target = p.target;
-                this.x_speed = xDisp * 2;
-                this.y_speed = yDisp * 2;  
-            } else {
-                p.throwing = 0;
-                p.possess = 0;
-            }
-        } else if (top_y < (p.y + p.size) && bottom_y > (p.y - p.size) && top_x < (p.x + p.size) && bottom_x > (p.x - p.size)) {
-            this.x_speed = 0;
-            this.y_speed = 0;
-            p.possess = 1;
-            this.x = p.x + p.size * xDisp;
-            this.y = p.y + p.size * yDisp;
-            this.grounded = false;
+        if(this.carrier == null){
+        	if (top_y < (p.y + p.size) && bottom_y > (p.y - p.size) && top_x < (p.x + p.size) && bottom_x > (p.x - p.size)) {
+        		p.possess = 1;
+        		this.carrier = p.name;
+        	}
+        }
+        if(this.carrier == p.name){
+        	if(p.possess == 0) this.carrier = null;
+        	else {
+	        	var xDisp = p.directionX;
+	        	var yDisp = p.directionY;
+	        	if (p.throwing == 1){
+		            if (top_y < (p.y + 3*p.size) && bottom_y > (p.y - 3*p.size) && top_x < (p.x + 3*p.size) && bottom_x > (p.x - 3*p.size)){
+		                this.target = p.target;
+		                this.x_speed = xDisp * 2;
+		                this.y_speed = yDisp * 2;  
+		            } else {
+		                p.throwing = 0;
+		                p.possess = 0;
+		                this.carrier = null;
+		            }
+		        } else {
+		        	this.x_speed = 0;
+	            	this.y_speed = 0;
+		            this.x = p.x + p.size * xDisp;
+		            this.y = p.y + p.size * yDisp;
+		            this.grounded = false;
+		        }
+		    }
         } else {
             p.possess = 0;
+            p.target = {x: this.x, y: this.y};
         }
     }
 };
