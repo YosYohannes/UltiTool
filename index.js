@@ -1,10 +1,12 @@
 var express = require('express');
 var socket = require('socket.io');
 
+const PORT = process.env.NODE_ENV == 'dev' ? 8000 : 8080;
+
 // App setup
 var app = express();
-var server = app.listen(8000, function(){
-    console.log('listening for requests on port 8000,');
+var server = app.listen(PORT, function(){
+    console.log('listening for requests on port ' + PORT);
 });
 
 // Static files
@@ -212,6 +214,7 @@ io.on('connection', (socket) => {
     });
 });
 
+io.sockets.emit('PORT', PORT);
 setInterval(gameloop, 16);
 function gameloop(){
 	update();

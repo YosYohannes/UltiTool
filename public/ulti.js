@@ -1,6 +1,7 @@
 var animate = window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || function (callback) {
         window.setTimeout(callback, 1000 / 120)
     };
+//var socket = io.connect('http://3.1.210.8:8080');
 var socket = io.connect('http://localhost:8000');
 
 var btn = document.getElementById('join');
@@ -40,7 +41,7 @@ function renderPlayers(players) {
         context.fillStyle = "white";
         context.textAlign = "center";
         context.fillText(p.name.substring(0,5),p.x,p.y - 2*p.size);
-        if(p.stall/1000 >= 1) context.fillText(Math.floor(p.stall/1000),p.x,p.y + 2.5*p.size);
+        if(p.stall/1000 > 0) context.fillText(Math.floor(p.stall/1000),p.x,p.y + 2.5*p.size);
     }
 };
 
