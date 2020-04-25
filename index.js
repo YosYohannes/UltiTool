@@ -228,6 +228,7 @@ io.on('connection', (socket) => {
     	try {
     		delete keysDown[players[socket.id].name];
     		delete team[players[socket.id].name];
+    		if(ball.carrier == players[socket.id].name) ball.carrier = null;
     		delete players[socket.id];
     	} catch(err){}
     });
