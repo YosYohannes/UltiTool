@@ -217,6 +217,7 @@ io.on('connection', (socket) => {
     	ball.target = {x:0.5*width, y:0.4*height};
     	ball.x_speed = 0;
     	ball.y_speed = 0;
+    	ball.carrier = null;
     	keysDown = {};
     	mousePos = {};
     	mouseClick = {};
