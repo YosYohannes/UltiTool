@@ -28,7 +28,9 @@ $ npm run prd
 
 ## Controls
 WASD - movement
+
 Mouse 1 - Throw. Distance direction and speed is based on mouse position.
+
 Spacebar - "Drop" disc. This will reset stall count, hand pass to someone. Used by moving the otherway to drop disc on the spot.
 
 Change team button will cycle between 2 teams. Team colour does not affect mechanics.
